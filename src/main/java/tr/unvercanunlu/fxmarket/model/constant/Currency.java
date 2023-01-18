@@ -25,7 +25,7 @@ public enum Currency implements Serializable {
 
     public static Currency fromCode(String code) {
         return Arrays.stream(Currency.values())
-                .filter(c -> c.getCode().equals(code))
+                .filter(c -> c.getCode().equalsIgnoreCase(code))
                 .findFirst()
                 .orElse(null);
     }
