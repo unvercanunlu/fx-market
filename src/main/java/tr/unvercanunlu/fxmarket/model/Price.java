@@ -17,9 +17,9 @@ public class Price implements Serializable {
 
     private Instrument instrument;
 
-    private Double bid;
+    private Double bidRate;
 
-    private Double ask;
+    private Double askRate;
 
     private LocalDateTime timestamp;
 }

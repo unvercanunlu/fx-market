@@ -19,26 +19,26 @@ public class PriceKafkaConsumer implements IKafkaConsumer<String, String> {
 
     private final IPriceRepository priceRepository;
 
-    private final IMapper<String, List<Price>> csvToPriceListMapper;
+    private final IMapper<String, List<Price>> csvParser;
 
     @Autowired
     public PriceKafkaConsumer(
             IPriceRepository priceRepository,
-            IMapper<String, List<Price>> csvToPriceListMapper
+            IMapper<String, List<Price>> csvParser
     ) {
         this.priceRepository = priceRepository;
-        this.csvToPriceListMapper = csvToPriceListMapper;
+        this.csvParser = csvParser;
     }
 
     @Override
     @KafkaListener(topics = "${topic.name}", containerFactory = "listenerFactory")
     public void onMessage(ConsumerRecord<String, String> payload) {
-        String csv = payload.value();
+        String csvText = payload.value();
 
         List<Price> prices = new ArrayList<>();
 
         try {
-            prices = this.csvToPriceListMapper.map(csv);
+            prices = this.csvParser.map(csvText);
         } catch (Exception e) {
             e.printStackTrace();
         }

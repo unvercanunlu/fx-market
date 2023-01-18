@@ -17,6 +17,7 @@ import java.util.Comparator;
 public class PriceService implements IPriceService {
 
     private final IPriceRepository priceRepository;
+
     @Value(value = "${commission-rate}")
     private Double commissionRate;
 
@@ -38,8 +39,8 @@ public class PriceService implements IPriceService {
         return PriceDto.builder()
                 .currencyFromCode(instrument.getFrom().getCode())
                 .currencyToCode(instrument.getTo().getCode())
-                .sellRate(this.applyCommission(price.getBid(), this.commissionRate, false))
-                .buyRate(this.applyCommission(price.getAsk(), this.commissionRate, true))
+                .sellRate(this.applyCommission(price.getBidRate(), this.commissionRate, false))
+                .buyRate(this.applyCommission(price.getAskRate(), this.commissionRate, true))
                 .timestamp(timestamp)
                 .build();
     }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import tr.unvercanunlu.fxmarket.config.ApiConfig;
+import tr.unvercanunlu.fxmarket.config.FxMarketConfig;
 import tr.unvercanunlu.fxmarket.controller.IPriceRestController;
 import tr.unvercanunlu.fxmarket.error.exception.CurrencyNotAvailableException;
 import tr.unvercanunlu.fxmarket.error.exception.InstrumentNotAvailableException;
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = ApiConfig.PRICE_API)
+@RequestMapping(path = FxMarketConfig.RestApi.PRICE)
 public class PriceRestController implements IPriceRestController {
 
     private final IPriceService priceService;
@@ -47,6 +47,7 @@ public class PriceRestController implements IPriceRestController {
                 .orElseThrow(() -> new InstrumentNotAvailableException(from, to));
 
         LocalDateTime now = LocalDateTime.now();
+
         PriceDto priceDto = this.priceService.getLatestPrice(instrument, now);
 
         return ResponseEntity

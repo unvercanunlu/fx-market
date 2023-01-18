@@ -24,9 +24,11 @@ public class KafkaProducerConfig {
     @Bean
     public ProducerFactory<String, String> defaultCProducerConfig() {
         Map<String, Object> configMap = new HashMap<>();
+
         configMap.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServer);
         configMap.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+
         return new DefaultKafkaProducerFactory<>(configMap);
     }
 

@@ -6,24 +6,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import tr.unvercanunlu.fxmarket.config.DateTimeConfig;
+import tr.unvercanunlu.fxmarket.config.FxMarketConfig;
 import tr.unvercanunlu.fxmarket.error.exception.CurrencyNotAvailableException;
 import tr.unvercanunlu.fxmarket.error.exception.InstrumentNotAvailableException;
 import tr.unvercanunlu.fxmarket.error.exception.PriceNotExistException;
 
 import javax.validation.ConstraintViolationException;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
 public class CustomErrorHandler {
 
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DateTimeConfig.DATE_TIME_FORMAT);
-
     @ExceptionHandler(value = PriceNotExistException.class)
     public ResponseEntity<Map<String, Object>> handlePriceNotExist(PriceNotExistException exception) {
         Map<String, Object> errorMap = new HashMap<>();
+
         errorMap.put("reason", exception.getMessage());
 
         Map<String, String> dataMap = new HashMap<>();
@@ -35,7 +33,7 @@ public class CustomErrorHandler {
         }
 
         try {
-            dataMap.put("timestamp", exception.getTimestamp().format(this.dateTimeFormatter));
+            dataMap.put("timestamp", exception.getTimestamp().format(FxMarketConfig.Date.FORMATTER));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -53,6 +51,7 @@ public class CustomErrorHandler {
     @ExceptionHandler(value = InstrumentNotAvailableException.class)
     public ResponseEntity<Map<String, Object>> handleInstrumentNotAvailable(InstrumentNotAvailableException exception) {
         Map<String, Object> errorMap = new HashMap<>();
+
         errorMap.put("reason", exception.getMessage());
 
         Map<String, String> dataMap = new HashMap<>();
@@ -82,6 +81,7 @@ public class CustomErrorHandler {
     @ExceptionHandler(value = CurrencyNotAvailableException.class)
     public ResponseEntity<Map<String, Object>> handleCurrencyNotAvailable(CurrencyNotAvailableException exception) {
         Map<String, Object> errorMap = new HashMap<>();
+
         errorMap.put("reason", exception.getMessage());
 
         Map<String, String> dataMap = new HashMap<>();
@@ -105,6 +105,7 @@ public class CustomErrorHandler {
     @ExceptionHandler(value = ConstraintViolationException.class)
     public ResponseEntity<Map<String, Object>> handleInternalValidationViolation(ConstraintViolationException exception) {
         Map<String, Object> errorMap = new HashMap<>();
+
         errorMap.put("reason", "Internal operation is not valid.");
 
         Map<String, String> fieldViolationMap = new HashMap<>();
@@ -124,6 +125,7 @@ public class CustomErrorHandler {
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleRequestValidationViolation(MethodArgumentNotValidException exception) {
         Map<String, Object> errorMap = new HashMap<>();
+
         errorMap.put("reason", "Request is not valid.");
 
         Map<String, String> fieldViolationMap = new HashMap<>();

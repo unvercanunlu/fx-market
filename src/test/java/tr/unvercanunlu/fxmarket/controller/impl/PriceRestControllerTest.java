@@ -1,6 +1,5 @@
 package tr.unvercanunlu.fxmarket.controller.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -11,7 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import tr.unvercanunlu.fxmarket.config.ApiConfig;
+import tr.unvercanunlu.fxmarket.config.FxMarketConfig;
 import tr.unvercanunlu.fxmarket.error.exception.PriceNotExistException;
 import tr.unvercanunlu.fxmarket.model.Price;
 import tr.unvercanunlu.fxmarket.model.constant.Currency;
@@ -48,16 +47,16 @@ class PriceRestControllerTest {
         Price price = Price.builder()
                 .id(1L)
                 .instrument(Instrument.EUR_USD)
-                .ask(1D)
-                .bid(1D)
+                .askRate(1.1D)
+                .bidRate(1.1D)
                 .timestamp(LocalDateTime.now())
                 .build();
 
         PriceDto priceDto = PriceDto.builder()
                 .currencyFromCode(price.getInstrument().getFrom().getCode())
                 .currencyToCode(price.getInstrument().getTo().getCode())
-                .buyRate(price.getAsk())
-                .sellRate(price.getBid())
+                .buyRate(price.getAskRate())
+                .sellRate(price.getBidRate())
                 .timestamp(LocalDateTime.now())
                 .build();
 
@@ -73,13 +72,11 @@ class PriceRestControllerTest {
         // rest call
         try {
             this.mockMvc.perform(
-                            get(ApiConfig.PRICE_API + "/" + currencyCodeFrom + "/" + currencyCodeTo))
+                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
                     .andDo(print())
                     .andExpect(status().is(HttpStatus.OK.value()))
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(content().json(this.objectMapper.writeValueAsString(priceDto)));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -118,11 +115,9 @@ class PriceRestControllerTest {
         // rest call
         try {
             this.mockMvc.perform(
-                            get(ApiConfig.PRICE_API + "/" + currencyCodeFrom + "/" + currencyCodeTo))
+                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
                     .andDo(print())
                     .andExpect(status().is(HttpStatus.NOT_FOUND.value()));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -152,11 +147,9 @@ class PriceRestControllerTest {
         // rest call
         try {
             this.mockMvc.perform(
-                            get(ApiConfig.PRICE_API + "/" + currencyCodeFrom + "/" + currencyCodeTo))
+                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
                     .andDo(print())
                     .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -174,11 +167,9 @@ class PriceRestControllerTest {
         // rest call
         try {
             this.mockMvc.perform(
-                            get(ApiConfig.PRICE_API + "/" + currencyCodeFrom + "/" + currencyCodeTo))
+                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
                     .andDo(print())
                     .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -196,11 +187,9 @@ class PriceRestControllerTest {
         // rest call
         try {
             this.mockMvc.perform(
-                            get(ApiConfig.PRICE_API + "/" + currencyCodeFrom + "/" + currencyCodeTo))
+                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
                     .andDo(print())
                     .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -212,17 +201,14 @@ class PriceRestControllerTest {
     @Test
     void getLatestPrice_nullCurrencyCodeFrom_shouldReturnBadRequest() {
         // parameters
-        String currencyCodeFrom = null;
         String currencyCodeTo = Currency.USD.getCode();
 
         // rest call
         try {
             this.mockMvc.perform(
-                            get(ApiConfig.PRICE_API + "/" + currencyCodeFrom + "/" + currencyCodeTo))
+                            get(FxMarketConfig.RestApi.PRICE + "/" + null + "/" + currencyCodeTo))
                     .andDo(print())
                     .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -235,16 +221,13 @@ class PriceRestControllerTest {
     void getLatestPrice_nullCurrencyCodeTo_shouldReturnBadRequest() {
         // parameters
         String currencyCodeFrom = Currency.USD.getCode();
-        String currencyCodeTo = null;
 
         // rest call
         try {
             this.mockMvc.perform(
-                            get(ApiConfig.PRICE_API + "/" + currencyCodeFrom + "/" + currencyCodeTo))
+                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + null))
                     .andDo(print())
                     .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -262,11 +245,9 @@ class PriceRestControllerTest {
         // rest call
         try {
             this.mockMvc.perform(
-                            get(ApiConfig.PRICE_API + "/" + currencyCodeFrom + "/" + currencyCodeTo))
+                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
                     .andDo(print())
                     .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -284,11 +265,9 @@ class PriceRestControllerTest {
         // rest call
         try {
             this.mockMvc.perform(
-                            get(ApiConfig.PRICE_API + "/" + currencyCodeFrom + "/" + currencyCodeTo))
+                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
                     .andDo(print())
                     .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

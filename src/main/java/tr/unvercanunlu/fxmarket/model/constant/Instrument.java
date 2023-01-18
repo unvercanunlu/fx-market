@@ -10,8 +10,12 @@ import java.util.Arrays;
 public enum Instrument implements Serializable {
 
     EUR_USD(Currency.EUR, Currency.USD),
+
     GBP_USD(Currency.GBP, Currency.USD),
+
     EUR_JPY(Currency.EUR, Currency.JPY);
+
+    public static final String INSTRUMENT_SEPARATOR = "/";
 
     private final Currency from;
 
@@ -31,6 +35,6 @@ public enum Instrument implements Serializable {
 
     @JsonValue
     public String getCode() {
-        return this.from.getCode() + "/" + this.to.getCode();
+        return this.from.getCode() + INSTRUMENT_SEPARATOR + this.to.getCode();
     }
 }

@@ -10,8 +10,11 @@ import java.util.Arrays;
 public enum Currency implements Serializable {
 
     EUR("EUR", "Euro"),
+
     USD("USD", "American Dollar"),
+
     GBP("GBP", "British Pound"),
+
     JPY("JPY", "Japanese Yen");
 
     private final String code;

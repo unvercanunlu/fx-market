@@ -24,10 +24,12 @@ public class KafkaConsumerConfig {
 
     private Map<String, Object> defaultConsumerConfig() {
         Map<String, Object> configMap = new HashMap<>();
+
         configMap.put(ConsumerConfig.GROUP_ID_CONFIG, this.groupId);
         configMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServer);
         configMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+
         return configMap;
     }
 
