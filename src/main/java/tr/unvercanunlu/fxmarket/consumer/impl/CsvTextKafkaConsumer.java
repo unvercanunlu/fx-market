@@ -15,14 +15,14 @@ import java.util.List;
 
 @Getter
 @Component
-public class PriceKafkaConsumer implements IKafkaConsumer<String, String> {
+public class CsvTextKafkaConsumer implements IKafkaConsumer<String, String> {
 
     private final IPriceRepository priceRepository;
 
     private final IMapper<String, List<Price>> csvParser;
 
     @Autowired
-    public PriceKafkaConsumer(
+    public CsvTextKafkaConsumer(
             IPriceRepository priceRepository,
             IMapper<String, List<Price>> csvParser
     ) {

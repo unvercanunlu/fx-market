@@ -12,7 +12,6 @@ import tr.unvercanunlu.fxmarket.model.constant.Instrument;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,7 +48,7 @@ class CsvTextToPriceListMapperTest {
         String csvText = this.csvTextBuilder(line);
 
         // expected
-        List<Price> expected = Collections.singletonList(price);
+        List<Price> expected = List.of(price);
 
         // result
         List<Price> actual = new ArrayList<>();
@@ -61,7 +60,7 @@ class CsvTextToPriceListMapperTest {
             e.printStackTrace();
         }
 
-        // asserts
+        // assertions
         assertNotNull(actual);
 
         assertEquals(expected.size(), actual.size());
@@ -138,7 +137,7 @@ class CsvTextToPriceListMapperTest {
             e.printStackTrace();
         }
 
-        // asserts
+        // assertions
         assertNotNull(actual);
 
         assertEquals(expected.size(), actual.size());
