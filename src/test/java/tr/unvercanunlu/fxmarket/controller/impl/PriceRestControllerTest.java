@@ -19,6 +19,8 @@ import tr.unvercanunlu.fxmarket.model.response.PriceDto;
 import tr.unvercanunlu.fxmarket.service.IPriceService;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -42,7 +44,7 @@ class PriceRestControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void getLatestPrice_validInstrument_withPrice_shouldReturnPrice() {
+    void getLatestPrice_validParameters_containPrice_shouldReturnPrice() {
         // data
         Price price = Price.builder()
                 .id(1L)
@@ -97,7 +99,7 @@ class PriceRestControllerTest {
     }
 
     @Test
-    void getLatestPrice_validInstrument_withoutPrice_shouldReturnNotFound() {
+    void getLatestPrice_validParameters_notContainPrice_shouldReturnNotFound() {
         // data
         Instrument instrument = Instrument.EUR_USD;
         LocalDateTime timestamp = LocalDateTime.now();
@@ -137,142 +139,58 @@ class PriceRestControllerTest {
         assertNotNull(timestampCaptor.getValue());
     }
 
-
     @Test
-    void getLatestPrice_notExistInstrument_shouldReturnBadRequest() {
-        // parameters
-        String currencyCodeFrom = Currency.JPY.getCode();
-        String currencyCodeTo = Currency.USD.getCode();
+    void getLatestPrice_inValidOrNotExistOrNullParameters_shouldReturnBadRequest() {
+        List<Map<String, String>> testCases = List.of(
+                // not exist instrument
+                Map.of(
+                        "currencyFromCode", Currency.JPY.getCode(),
+                        "currencyToCode", Currency.USD.getCode()),
+                // not exist currency from code
+                Map.of(
+                        "currencyFromCode", "TRY", // Turkish Lira
+                        "currencyToCode", Currency.USD.getCode()),
+                // not exist currency to code
+                Map.of(
+                        "currencyFromCode", Currency.USD.getCode(),
+                        "currencyToCode", "TRY"), // Turkish Lira
+                // invalid currency from code
+                Map.of(
+                        "currencyFromCode", "a",
+                        "currencyToCode", Currency.USD.getCode()),
+                // invalid currency to code
+                Map.of(
+                        "currencyFromCode", Currency.USD.getCode(),
+                        "currencyToCode", "a"),
+                // null currency from code
+                Map.of(
+                        "currencyFromCode", "null",
+                        "currencyToCode", Currency.USD.getCode()),
+                // null currency to code
+                Map.of(
+                        "currencyFromCode", Currency.USD.getCode(),
+                        "currencyToCode", "null"));
 
-        // rest call
-        try {
-            this.mockMvc.perform(
-                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
-                    .andDo(print())
-                    .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        // variables
+        String currencyFromCode, currencyToCode;
+
+        for (Map<String, String> testCase : testCases) {
+            // parameters
+            currencyFromCode = testCase.get("currencyFromCode");
+            currencyToCode = testCase.get("currencyToCode");
+
+            // rest call
+            try {
+                this.mockMvc.perform(
+                                get(FxMarketConfig.RestApi.PRICE + "/" + currencyFromCode + "/" + currencyToCode))
+                        .andDo(print())
+                        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            // verify
+            verify(this.priceService, never()).getLatestPrice(any(), any());
         }
-
-        // verify
-        verify(this.priceService, never()).getLatestPrice(any(), any());
-    }
-
-    @Test
-    void getLatestPrice_notExistCurrencyCodeFrom_shouldReturnBadRequest() {
-        // parameters
-        String currencyCodeFrom = "TRY"; // Turkish Lira
-        String currencyCodeTo = Currency.EUR.getCode();
-
-        // rest call
-        try {
-            this.mockMvc.perform(
-                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
-                    .andDo(print())
-                    .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // verify
-        verify(this.priceService, never()).getLatestPrice(any(), any());
-    }
-
-    @Test
-    void getLatestPrice_notExistCurrencyCodeTo_shouldReturnBadRequest() {
-        // parameters
-        String currencyCodeFrom = Currency.USD.getCode();
-        String currencyCodeTo = "TRY"; // Turkish Lira
-
-        // rest call
-        try {
-            this.mockMvc.perform(
-                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
-                    .andDo(print())
-                    .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // verify
-        verify(this.priceService, never()).getLatestPrice(any(), any());
-    }
-
-    @Test
-    void getLatestPrice_nullCurrencyCodeFrom_shouldReturnBadRequest() {
-        // parameters
-        String currencyCodeTo = Currency.USD.getCode();
-
-        // rest call
-        try {
-            this.mockMvc.perform(
-                            get(FxMarketConfig.RestApi.PRICE + "/" + null + "/" + currencyCodeTo))
-                    .andDo(print())
-                    .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // verify
-        verify(this.priceService, never()).getLatestPrice(any(), any());
-    }
-
-    @Test
-    void getLatestPrice_nullCurrencyCodeTo_shouldReturnBadRequest() {
-        // parameters
-        String currencyCodeFrom = Currency.USD.getCode();
-
-        // rest call
-        try {
-            this.mockMvc.perform(
-                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + null))
-                    .andDo(print())
-                    .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // verify
-        verify(this.priceService, never()).getLatestPrice(any(), any());
-    }
-
-    @Test
-    void getLatestPrice_inValidCurrencyCodeFrom_shouldReturnBadRequest() {
-        // parameters
-        String currencyCodeFrom = "a";
-        String currencyCodeTo = Currency.USD.getCode();
-
-        // rest call
-        try {
-            this.mockMvc.perform(
-                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
-                    .andDo(print())
-                    .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // verify
-        verify(this.priceService, never()).getLatestPrice(any(), any());
-    }
-
-    @Test
-    void getLatestPrice_inValidCurrencyCodeTo_shouldReturnBadRequest() {
-        // parameters
-        String currencyCodeFrom = Currency.USD.getCode();
-        String currencyCodeTo = "a";
-
-        // rest call
-        try {
-            this.mockMvc.perform(
-                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
-                    .andDo(print())
-                    .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        // verify
-        verify(this.priceService, never()).getLatestPrice(any(), any());
     }
 }

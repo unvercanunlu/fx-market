@@ -24,7 +24,7 @@ class CsvTextToPriceListMapperTest {
     private IMapper<String, List<Price>> csvParser;
 
     @Test
-    void map_validSingleLine_shouldReturnPriceList() {
+    void map_validSingleLineCsvText_shouldReturnPriceList() {
         // data
         String timestampTextValid = "01-06-2020 12:01:01:001";
         LocalDateTime timestampValid = LocalDateTime.parse(timestampTextValid, FxMarketConfig.Date.FORMATTER);
@@ -90,7 +90,7 @@ class CsvTextToPriceListMapperTest {
     }
 
     @Test
-    void map_validMultiLine_shouldReturnPriceList() {
+    void map_validMultiLineCsvText_shouldReturnPriceList() {
         // data
         String timestampTextValid = "01-06-2020 12:01:01:001";
         LocalDateTime timestampValid = LocalDateTime.parse(timestampTextValid, FxMarketConfig.Date.FORMATTER);
@@ -167,7 +167,7 @@ class CsvTextToPriceListMapperTest {
     }
 
     @Test
-    void map_missingOrInvalidOrNotExistParts_shouldThrowCsvTextNotValidException() {
+    void map_missingOrInvalidOrNotExistPartsCsvText_shouldThrowCsvTextNotValidException() {
         // data
         long idValid = 1L;
         long idInvalid = -1L;
@@ -230,6 +230,7 @@ class CsvTextToPriceListMapperTest {
         }
     }
 
+    // test case helpers
     private String csvTextBuilder(String... lines) {
         StringBuilder builder = new StringBuilder();
 
