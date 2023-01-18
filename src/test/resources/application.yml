@@ -16,3 +16,5 @@ topic:
 
 group-id:
   event: fx-market
+
+commission-rate: 0.01

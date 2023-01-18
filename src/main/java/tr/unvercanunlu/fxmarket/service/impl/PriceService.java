@@ -1,6 +1,7 @@
 package tr.unvercanunlu.fxmarket.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tr.unvercanunlu.fxmarket.error.exception.PriceNotExistException;
 import tr.unvercanunlu.fxmarket.model.Price;
@@ -14,6 +15,9 @@ import java.util.Comparator;
 
 @Service
 public class PriceService implements IPriceService {
+
+    @Value(value = "${commission-rate}")
+    private Double commissionRate;
 
     private final IPriceRepository priceRepository;
 
@@ -35,9 +39,23 @@ public class PriceService implements IPriceService {
         return PriceDto.builder()
                 .currencyFromCode(instrument.getFrom().getCode())
                 .currencyToCode(instrument.getTo().getCode())
-                .sellRate(price.getBid())
-                .buyRate(price.getAsk())
+                .sellRate(this.applyCommission(price.getBid(), this.commissionRate, false))
+                .buyRate(this.applyCommission(price.getAsk(), this.commissionRate, true))
                 .timestamp(timestamp)
                 .build();
+    }
+
+    private Double applyCommission(Double value, Double commission, boolean add) {
+        return add
+                ? applyCommissionAdd(value, commission)
+                : applyCommissionSubtract(value, commission);
+    }
+
+    private Double applyCommissionAdd(Double value, Double commission) {
+        return value + (value * commission);
+    }
+
+    private Double applyCommissionSubtract(Double value, Double commission) {
+        return value - (value * commission);
     }
 }
