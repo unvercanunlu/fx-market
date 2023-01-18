@@ -16,10 +16,9 @@ import java.util.Comparator;
 @Service
 public class PriceService implements IPriceService {
 
+    private final IPriceRepository priceRepository;
     @Value(value = "${commission-rate}")
     private Double commissionRate;
-
-    private final IPriceRepository priceRepository;
 
     @Autowired
     public PriceService(IPriceRepository priceRepository) {

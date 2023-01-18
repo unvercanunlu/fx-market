@@ -1,7 +1,10 @@
 package tr.unvercanunlu.fxmarket.error.exception;
 
+import lombok.Getter;
+
 import java.io.Serializable;
 
+@Getter
 public class CurrencyNotAvailableException extends RuntimeException implements Serializable {
 
     private final String currencyCode;
