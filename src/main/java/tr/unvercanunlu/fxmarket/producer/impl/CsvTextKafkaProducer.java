@@ -8,12 +8,12 @@ import tr.unvercanunlu.fxmarket.producer.IKafkaProducer;
 import java.util.UUID;
 
 @Component
-public class PriceKafkaProducer implements IKafkaProducer {
+public class CsvTextKafkaProducer implements IKafkaProducer {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Autowired
-    public PriceKafkaProducer(KafkaTemplate<String, String> kafkaTemplate) {
+    public CsvTextKafkaProducer(KafkaTemplate<String, String> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 

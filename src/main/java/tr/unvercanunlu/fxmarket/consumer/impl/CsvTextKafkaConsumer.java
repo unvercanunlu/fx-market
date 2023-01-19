@@ -31,7 +31,7 @@ public class CsvTextKafkaConsumer implements IKafkaConsumer<String, String> {
     }
 
     @Override
-    @KafkaListener(topics = "${topic.name}", containerFactory = "listenerFactory")
+    @KafkaListener(topics = "${spring.kafka.topic}", containerFactory = "listenerFactory")
     public void onMessage(ConsumerRecord<String, String> payload) {
         String csvText = payload.value();
 

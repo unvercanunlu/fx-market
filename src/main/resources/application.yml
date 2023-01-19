@@ -6,15 +6,8 @@ spring:
     name: fx-market
 
   kafka:
-    consumer:
-      bootstrap-servers: localhost:9092
-    producer:
-      bootstrap-servers: localhost:9092
-
-topic:
-  name: prices
-
-group-id:
-  event: fx-market
+    topic: prices
+    group-id: fx-market
+    bootstrap-servers: localhost:9092
 
 commission-rate: 0.01

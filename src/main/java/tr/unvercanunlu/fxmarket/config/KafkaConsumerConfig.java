@@ -16,10 +16,10 @@ import java.util.Map;
 @Configuration
 public class KafkaConsumerConfig {
 
-    @Value(value = "${spring.kafka.consumer.bootstrap-servers}")
+    @Value(value = "${spring.kafka.bootstrap-servers}")
     private String bootstrapServer;
 
-    @Value(value = "${group-id.event}")
+    @Value(value = "${spring.kafka.group-id}")
     private String groupId;
 
     private Map<String, Object> defaultConsumerConfig() {
