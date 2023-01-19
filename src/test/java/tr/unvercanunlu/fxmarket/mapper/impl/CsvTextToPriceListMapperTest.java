@@ -1,5 +1,6 @@
 package tr.unvercanunlu.fxmarket.mapper.impl;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,8 +14,6 @@ import tr.unvercanunlu.fxmarket.model.constant.Instrument;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class CsvTextToPriceListMapperTest {
@@ -61,30 +60,30 @@ class CsvTextToPriceListMapperTest {
         }
 
         // assertions
-        assertNotNull(actual);
+        Assertions.assertNotNull(actual);
 
-        assertEquals(expected.size(), actual.size());
+        Assertions.assertEquals(expected.size(), actual.size());
 
         for (int i = 0; i < actual.size(); i++) {
             Price actualPrice = actual.get(i);
-            assertNotNull(actualPrice);
+            Assertions.assertNotNull(actualPrice);
 
             Price expectedPrice = expected.get(i);
 
-            assertNotNull(actualPrice.getId());
-            assertEquals(expectedPrice.getId(), actualPrice.getId());
+            Assertions.assertNotNull(actualPrice.getId());
+            Assertions.assertEquals(expectedPrice.getId(), actualPrice.getId());
 
-            assertNotNull(actualPrice.getInstrument());
-            assertEquals(expectedPrice.getInstrument(), actualPrice.getInstrument());
+            Assertions.assertNotNull(actualPrice.getInstrument());
+            Assertions.assertEquals(expectedPrice.getInstrument(), actualPrice.getInstrument());
 
-            assertNotNull(actualPrice.getAskRate());
-            assertEquals(expectedPrice.getAskRate(), actualPrice.getAskRate());
+            Assertions.assertNotNull(actualPrice.getAskRate());
+            Assertions.assertEquals(expectedPrice.getAskRate(), actualPrice.getAskRate());
 
-            assertNotNull(actualPrice.getBidRate());
-            assertEquals(expectedPrice.getBidRate(), actualPrice.getBidRate());
+            Assertions.assertNotNull(actualPrice.getBidRate());
+            Assertions.assertEquals(expectedPrice.getBidRate(), actualPrice.getBidRate());
 
-            assertNotNull(actualPrice.getTimestamp());
-            assertEquals(expectedPrice.getTimestamp(), actualPrice.getTimestamp());
+            Assertions.assertNotNull(actualPrice.getTimestamp());
+            Assertions.assertEquals(expectedPrice.getTimestamp(), actualPrice.getTimestamp());
         }
     }
 
@@ -138,30 +137,30 @@ class CsvTextToPriceListMapperTest {
         }
 
         // assertions
-        assertNotNull(actual);
+        Assertions.assertNotNull(actual);
 
-        assertEquals(expected.size(), actual.size());
+        Assertions.assertEquals(expected.size(), actual.size());
 
         for (int i = 0; i < actual.size(); i++) {
             Price actualPrice = actual.get(i);
-            assertNotNull(actualPrice);
+            Assertions.assertNotNull(actualPrice);
 
             Price expectedPrice = expected.get(i);
 
-            assertNotNull(actualPrice.getId());
-            assertEquals(expectedPrice.getId(), actualPrice.getId());
+            Assertions.assertNotNull(actualPrice.getId());
+            Assertions.assertEquals(expectedPrice.getId(), actualPrice.getId());
 
-            assertNotNull(actualPrice.getInstrument());
-            assertEquals(expectedPrice.getInstrument(), actualPrice.getInstrument());
+            Assertions.assertNotNull(actualPrice.getInstrument());
+            Assertions.assertEquals(expectedPrice.getInstrument(), actualPrice.getInstrument());
 
-            assertNotNull(actualPrice.getAskRate());
-            assertEquals(expectedPrice.getAskRate(), actualPrice.getAskRate());
+            Assertions.assertNotNull(actualPrice.getAskRate());
+            Assertions.assertEquals(expectedPrice.getAskRate(), actualPrice.getAskRate());
 
-            assertNotNull(actualPrice.getBidRate());
-            assertEquals(expectedPrice.getBidRate(), actualPrice.getBidRate());
+            Assertions.assertNotNull(actualPrice.getBidRate());
+            Assertions.assertEquals(expectedPrice.getBidRate(), actualPrice.getBidRate());
 
-            assertNotNull(actualPrice.getTimestamp());
-            assertEquals(expectedPrice.getTimestamp(), actualPrice.getTimestamp());
+            Assertions.assertNotNull(actualPrice.getTimestamp());
+            Assertions.assertEquals(expectedPrice.getTimestamp(), actualPrice.getTimestamp());
         }
     }
 
@@ -222,7 +221,7 @@ class CsvTextToPriceListMapperTest {
         for (String csvTextInvalid : csvTextlist) {
             // method call and assert
             try {
-                assertThrows(CsvTextNotValidException.class, () -> this.csvParser.map(csvTextInvalid));
+                Assertions.assertThrows(CsvTextNotValidException.class, () -> this.csvParser.map(csvTextInvalid));
             } catch (Exception e) {
                 e.printStackTrace();
             }

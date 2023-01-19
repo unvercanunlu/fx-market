@@ -1,16 +1,20 @@
 package tr.unvercanunlu.fxmarket.consumer.impl;
 
+import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,12 +22,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
-import org.springframework.kafka.listener.ContainerProperties;
-import org.springframework.kafka.listener.KafkaMessageListenerContainer;
-import org.springframework.kafka.listener.MessageListener;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.kafka.test.utils.ContainerTestUtils;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 import tr.unvercanunlu.fxmarket.mapper.impl.CsvTextToPriceListMapper;
 import tr.unvercanunlu.fxmarket.model.Price;
@@ -33,19 +33,13 @@ import tr.unvercanunlu.fxmarket.repository.impl.PriceInMemoryRepository;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @EmbeddedKafka
 class CsvTextKafkaConsumerTest {
 
     @SpyBean
-    private CsvTextKafkaConsumer consumer;
+    private CsvTextKafkaConsumer csvTextConsumer;
 
     @MockBean
     private CsvTextToPriceListMapper csvParser;
@@ -65,55 +59,20 @@ class CsvTextKafkaConsumerTest {
     @Autowired
     private EmbeddedKafkaBroker embeddedKafkaBroker;
 
-    private BlockingQueue<ConsumerRecord<String, String>> records;
-
-    private KafkaMessageListenerContainer<String, String> container;
-
     private Producer<String, String> producer;
+
+    private Consumer<String, String> consumer;
 
     @BeforeEach
     void setUp() {
-        // consumer config
-        Map<String, Object> consumerConfigMap = this.generateConsumerConfigMap();
-
-        // consumer factory
-        DefaultKafkaConsumerFactory<String, String> consumerFactory = new DefaultKafkaConsumerFactory<>(consumerConfigMap, new StringDeserializer(), new StringDeserializer());
-
-        // container properties
-        ContainerProperties containerProperties = new ContainerProperties(this.topic);
-
-        // container
-        this.container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
-
-        // records
-        this.records = new LinkedBlockingQueue<>();
-
-        // message listener
-        this.container.setupMessageListener(
-                (MessageListener<String, String>) consumerRecord -> this.records.add(consumerRecord));
-
-        // consumer start
-        this.container.start();
-
-        // partitions
-        int partitions = this.embeddedKafkaBroker.getTopics().size() * this.embeddedKafkaBroker.getPartitionsPerTopic();
-
-        // wait
-        ContainerTestUtils.waitForAssignment(this.container, partitions);
-
-        // producer config
-        Map<String, Object> configMap = this.generateProducerConfigMap();
-
-        // producer factory
-        DefaultKafkaProducerFactory<String, String> producerFactory = new DefaultKafkaProducerFactory<>(configMap, new StringSerializer(), new StringSerializer());
-
-        // producer
-        this.producer = producerFactory.createProducer();
+        // this.prepareConsumer();
+        this.prepareProducer();
     }
 
     @AfterEach
     void tearDown() {
-        this.container.stop();
+        this.producer.close();
+        // this.consumer.close();
     }
 
     @Test
@@ -133,56 +92,55 @@ class CsvTextKafkaConsumerTest {
         List<Price> priceList = List.of(expected);
 
         // mock
-        when(this.csvParser.map(any(String.class))).thenReturn(priceList);
+        Mockito.when(this.csvParser.map(Mockito.any(String.class))).thenReturn(priceList);
 
         // producer message
         ProducerRecord<String, String> record = this.generateMessage(csvText);
 
-        // send message using producer
+        // send message
         this.producer.send(record);
 
-        // flush producer
         this.producer.flush();
 
         // capture
         ArgumentCaptor<ConsumerRecord<String, String>> payloadCaptor = ArgumentCaptor.forClass(ConsumerRecord.class);
 
-        verify(this.consumer, timeout(timeoutMs)).onMessage(payloadCaptor.capture());
+        Mockito.verify(this.csvTextConsumer, Mockito.timeout(timeoutMs)).onMessage(payloadCaptor.capture());
 
         ConsumerRecord<String, String> capturedPayload = payloadCaptor.getValue();
 
         // assertions
-        assertNotNull(capturedPayload);
+        Assertions.assertNotNull(capturedPayload);
 
-        assertNotNull(capturedPayload.topic());
-        assertEquals(capturedPayload.topic(), this.topic);
+        Assertions.assertNotNull(capturedPayload.topic());
+        Assertions.assertEquals(capturedPayload.topic(), this.topic);
 
-        assertNotNull(capturedPayload.key());
+        Assertions.assertNotNull(capturedPayload.key());
 
-        assertNotNull(capturedPayload.value());
-        assertEquals(capturedPayload.value(), csvText);
+        Assertions.assertNotNull(capturedPayload.value());
+        Assertions.assertEquals(capturedPayload.value(), csvText);
 
         // capture
         ArgumentCaptor<String> csvTextCaptor = ArgumentCaptor.forClass(String.class);
 
-        verify(this.csvParser, times(csvTextCount)).map(csvTextCaptor.capture());
+        Mockito.verify(this.csvParser, Mockito.times(csvTextCount)).map(csvTextCaptor.capture());
 
         String capturedCsvText = csvTextCaptor.getValue();
 
         // assertions
-        assertNotNull(capturedCsvText);
-        assertEquals(capturedCsvText, csvText);
+        Assertions.assertNotNull(capturedCsvText);
+        Assertions.assertEquals(capturedCsvText, csvText);
 
         // capture
         ArgumentCaptor<Price> priceCaptor = ArgumentCaptor.forClass(Price.class);
 
-        verify(this.priceInMemoryRepository, times(priceList.size())).add(priceCaptor.capture());
+        Mockito.verify(this.priceInMemoryRepository, Mockito.times(priceList.size())).add(priceCaptor.capture());
 
         Price capturedPrice = priceCaptor.getValue();
 
         // assertions
-        assertNotNull(capturedPrice);
-        assertEquals(capturedPrice, expected);
+        Assertions.assertNotNull(capturedPrice);
+        Assertions.assertEquals(capturedPrice, expected);
     }
 
     // test helpers
@@ -210,5 +168,33 @@ class CsvTextKafkaConsumerTest {
         configMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 
         return configMap;
+    }
+
+    private void prepareConsumer() {
+        // consumer config
+        Map<String, Object> configMap = this.generateConsumerConfigMap();
+
+        // consumer factory
+        DefaultKafkaConsumerFactory<String, String> consumerFactory = new DefaultKafkaConsumerFactory<>(configMap, new StringDeserializer(), new StringDeserializer());
+
+        // consumer
+        this.consumer = consumerFactory.createConsumer(this.groupId, "1");
+
+        int partitionCount = 1;
+
+        this.consumer.assign(List.of(new TopicPartition(this.topic, partitionCount)));
+
+        // this.consumer.subscribe(Collections.singleton(this.topic));
+    }
+
+    private void prepareProducer() {
+        // producer config
+        Map<String, Object> configMap = this.generateProducerConfigMap();
+
+        // producer factory
+        DefaultKafkaProducerFactory<String, String> producerFactory = new DefaultKafkaProducerFactory<>(configMap, new StringSerializer(), new StringSerializer());
+
+        // producer
+        this.producer = producerFactory.createProducer();
     }
 }

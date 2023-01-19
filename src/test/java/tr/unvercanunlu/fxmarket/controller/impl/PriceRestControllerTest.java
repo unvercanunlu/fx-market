@@ -1,8 +1,10 @@
 package tr.unvercanunlu.fxmarket.controller.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,6 +12,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import tr.unvercanunlu.fxmarket.config.FxMarketConfig;
 import tr.unvercanunlu.fxmarket.error.exception.PriceNotExistException;
 import tr.unvercanunlu.fxmarket.model.Price;
@@ -21,14 +26,6 @@ import tr.unvercanunlu.fxmarket.service.IPriceService;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -67,18 +64,18 @@ class PriceRestControllerTest {
         String currencyCodeTo = price.getInstrument().getTo().getCode();
 
         // mock
-        when(this.priceService.getLatestPrice(
-                any(Instrument.class), any(LocalDateTime.class))
+        Mockito.when(this.priceService.getLatestPrice(
+                Mockito.any(Instrument.class), Mockito.any(LocalDateTime.class))
         ).thenReturn(priceDto);
 
         // rest call
         try {
             this.mockMvc.perform(
-                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
-                    .andDo(print())
-                    .andExpect(status().is(HttpStatus.OK.value()))
-                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(content().json(this.objectMapper.writeValueAsString(priceDto)));
+                            MockMvcRequestBuilders.get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
+                    .andDo(MockMvcResultHandlers.print())
+                    .andExpect(MockMvcResultMatchers.status().is(HttpStatus.OK.value()))
+                    .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.content().json(this.objectMapper.writeValueAsString(priceDto)));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -88,14 +85,14 @@ class PriceRestControllerTest {
         ArgumentCaptor<LocalDateTime> timestampCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
 
         // verify
-        verify(this.priceService, times(1))
+        Mockito.verify(this.priceService, Mockito.times(1))
                 .getLatestPrice(instrumentCaptor.capture(), timestampCaptor.capture());
 
         // assertions
-        assertNotNull(instrumentCaptor.getValue());
-        assertEquals(instrumentCaptor.getValue(), price.getInstrument());
+        Assertions.assertNotNull(instrumentCaptor.getValue());
+        Assertions.assertEquals(instrumentCaptor.getValue(), price.getInstrument());
 
-        assertNotNull(timestampCaptor.getValue());
+        Assertions.assertNotNull(timestampCaptor.getValue());
     }
 
     @Test
@@ -110,16 +107,16 @@ class PriceRestControllerTest {
         String currencyCodeTo = instrument.getTo().getCode();
 
         // mock
-        when(this.priceService.getLatestPrice(
-                any(Instrument.class), any(LocalDateTime.class))
+        Mockito.when(this.priceService.getLatestPrice(
+                Mockito.any(Instrument.class), Mockito.any(LocalDateTime.class))
         ).thenThrow(exception);
 
         // rest call
         try {
             this.mockMvc.perform(
-                            get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
-                    .andDo(print())
-                    .andExpect(status().is(HttpStatus.NOT_FOUND.value()));
+                            MockMvcRequestBuilders.get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
+                    .andDo(MockMvcResultHandlers.print())
+                    .andExpect(MockMvcResultMatchers.status().is(HttpStatus.NOT_FOUND.value()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -129,14 +126,14 @@ class PriceRestControllerTest {
         ArgumentCaptor<LocalDateTime> timestampCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
 
         // verify
-        verify(this.priceService, times(1))
+        Mockito.verify(this.priceService, Mockito.times(1))
                 .getLatestPrice(instrumentCaptor.capture(), timestampCaptor.capture());
 
         // assertions
-        assertNotNull(instrumentCaptor.getValue());
-        assertEquals(instrumentCaptor.getValue(), instrument);
+        Assertions.assertNotNull(instrumentCaptor.getValue());
+        Assertions.assertEquals(instrumentCaptor.getValue(), instrument);
 
-        assertNotNull(timestampCaptor.getValue());
+        Assertions.assertNotNull(timestampCaptor.getValue());
     }
 
     @Test
@@ -182,15 +179,15 @@ class PriceRestControllerTest {
             // rest call
             try {
                 this.mockMvc.perform(
-                                get(FxMarketConfig.RestApi.PRICE + "/" + currencyFromCode + "/" + currencyToCode))
-                        .andDo(print())
-                        .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
+                                MockMvcRequestBuilders.get(FxMarketConfig.RestApi.PRICE + "/" + currencyFromCode + "/" + currencyToCode))
+                        .andDo(MockMvcResultHandlers.print())
+                        .andExpect(MockMvcResultMatchers.status().is(HttpStatus.BAD_REQUEST.value()));
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
 
             // verify
-            verify(this.priceService, never()).getLatestPrice(any(), any());
+            Mockito.verify(this.priceService, Mockito.never()).getLatestPrice(Mockito.any(), Mockito.any());
         }
     }
 }
