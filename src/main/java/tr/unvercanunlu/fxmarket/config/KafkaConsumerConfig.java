@@ -29,6 +29,7 @@ public class KafkaConsumerConfig {
         configMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServer);
         configMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         configMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        configMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         return configMap;
     }
