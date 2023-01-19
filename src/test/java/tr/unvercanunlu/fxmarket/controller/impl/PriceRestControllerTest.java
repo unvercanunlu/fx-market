@@ -63,12 +63,12 @@ class PriceRestControllerTest {
         String currencyCodeFrom = price.getInstrument().getFrom().getCode();
         String currencyCodeTo = price.getInstrument().getTo().getCode();
 
-        // mock
+        // mocking
         Mockito.when(this.priceService.getLatestPrice(
                 Mockito.any(Instrument.class), Mockito.any(LocalDateTime.class))
         ).thenReturn(priceDto);
 
-        // rest call
+        // send rest request
         try {
             this.mockMvc.perform(
                             MockMvcRequestBuilders.get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
@@ -84,7 +84,7 @@ class PriceRestControllerTest {
         ArgumentCaptor<Instrument> instrumentCaptor = ArgumentCaptor.forClass(Instrument.class);
         ArgumentCaptor<LocalDateTime> timestampCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
 
-        // verify
+        // verification
         Mockito.verify(this.priceService, Mockito.times(1))
                 .getLatestPrice(instrumentCaptor.capture(), timestampCaptor.capture());
 
@@ -106,12 +106,12 @@ class PriceRestControllerTest {
         String currencyCodeFrom = instrument.getFrom().getCode();
         String currencyCodeTo = instrument.getTo().getCode();
 
-        // mock
+        // mocking
         Mockito.when(this.priceService.getLatestPrice(
                 Mockito.any(Instrument.class), Mockito.any(LocalDateTime.class))
         ).thenThrow(exception);
 
-        // rest call
+        // send rest request
         try {
             this.mockMvc.perform(
                             MockMvcRequestBuilders.get(FxMarketConfig.RestApi.PRICE + "/" + currencyCodeFrom + "/" + currencyCodeTo))
@@ -125,7 +125,7 @@ class PriceRestControllerTest {
         ArgumentCaptor<Instrument> instrumentCaptor = ArgumentCaptor.forClass(Instrument.class);
         ArgumentCaptor<LocalDateTime> timestampCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
 
-        // verify
+        // verification
         Mockito.verify(this.priceService, Mockito.times(1))
                 .getLatestPrice(instrumentCaptor.capture(), timestampCaptor.capture());
 
@@ -176,7 +176,7 @@ class PriceRestControllerTest {
             currencyFromCode = testCase.get("currencyFromCode");
             currencyToCode = testCase.get("currencyToCode");
 
-            // rest call
+            // send rest request
             try {
                 this.mockMvc.perform(
                                 MockMvcRequestBuilders.get(FxMarketConfig.RestApi.PRICE + "/" + currencyFromCode + "/" + currencyToCode))
@@ -186,7 +186,7 @@ class PriceRestControllerTest {
                 throw new RuntimeException(e);
             }
 
-            // verify
+            // verification
             Mockito.verify(this.priceService, Mockito.never()).getLatestPrice(Mockito.any(), Mockito.any());
         }
     }

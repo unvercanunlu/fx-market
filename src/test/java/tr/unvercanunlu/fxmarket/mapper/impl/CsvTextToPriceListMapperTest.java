@@ -52,7 +52,7 @@ class CsvTextToPriceListMapperTest {
         // result
         List<Price> actual = new ArrayList<>();
 
-        // method call
+        // method invoke
         try {
             actual = this.csvParser.map(csvText);
         } catch (Exception e) {
@@ -129,7 +129,7 @@ class CsvTextToPriceListMapperTest {
         // result
         List<Price> actual = new ArrayList<>();
 
-        // method call
+        // method invoke
         try {
             actual = this.csvParser.map(csvText);
         } catch (Exception e) {
@@ -219,7 +219,7 @@ class CsvTextToPriceListMapperTest {
         );
 
         for (String csvTextInvalid : csvTextlist) {
-            // method call and assert
+            // method invoke
             try {
                 Assertions.assertThrows(CsvTextNotValidException.class, () -> this.csvParser.map(csvTextInvalid));
             } catch (Exception e) {

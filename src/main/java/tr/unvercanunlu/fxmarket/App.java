@@ -1,33 +1,32 @@
 package tr.unvercanunlu.fxmarket;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
-import tr.unvercanunlu.fxmarket.producer.impl.CsvTextKafkaProducer;
-
-import java.util.List;
 
 @SpringBootApplication
 public class App {
 
-    @Autowired
-    private CsvTextKafkaProducer producer;
-
+    /*
     @Value("${spring.kafka.topic}")
     private String topic;
+
+    private final CsvTextKafkaProducer producer;
+
+    @Autowired
+    public App(CsvTextKafkaProducer producer) {
+        this.producer = producer;
+    }
+    */
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
     }
 
-
+    /*
     @EventListener(value = ApplicationReadyEvent.class)
     public void initializeDatabase() {
-        // List<String> csvTexts = prepareCsvTexts();
-        // csvTexts.forEach(csvText -> this.producer.send(csvText, this.topic));
+        List<String> csvTexts = prepareCsvTexts();
+        csvTexts.forEach(csvText -> this.producer.send(csvText, this.topic));
     }
 
     private List<String> prepareCsvTexts() {
@@ -40,4 +39,5 @@ public class App {
         String csvText2 = line3 + "\n" + line4 + "\n" + line5;
         return List.of(csvText1, csvText2);
     }
+    */
 }
